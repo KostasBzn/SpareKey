@@ -5,5 +5,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SpareKey.MainWindow"
         Title="SpareKey">
-    Welcome to Avalonia!
+    <StackPanel Margin="20" Spacing="10">
+        <TextBlock x:Name="GreetingText" Text="I have no Idea what am I doing" FontSize="24"/>
+        <Button Content="Dont Click Here" Click="OnHelloClick"/>
+    </StackPanel>
 </Window>
