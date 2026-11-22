@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>SpareKey</RootNamespace>
     <OutputType>WinExe</OutputType>
@@ -16,5 +16,16 @@
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpareKey.Core\SpareKey.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dialogs\" />
+    <Folder Include="Assets\" />
+    <Folder Include="Services\" />
+    <Folder Include="Views\" />
   </ItemGroup>
 </Project>
