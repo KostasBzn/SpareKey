@@ -33,9 +33,10 @@ namespace SpareKey.Core.Crypto
         private const int BitsPerWord = 11;
         private const int ListSize = 2048;
 
-        // SHA-256 of the official BIP39 English list (words joined with "\n").
+        // SHA-256 of the official BIP39 English list
+        // Source: https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
+        // Official raw file: https://raw.githubusercontent.com/bitcoin/bips/master/bip-0039/english.txt
         // If the embedded file is ever damaged or edited, we refuse to use it.
-        // A wrong list would print words that can't restore the vault later.
         private const string ExpectedListHash = "2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda";
 
         private static readonly string[] wordList = LoadWordList();
