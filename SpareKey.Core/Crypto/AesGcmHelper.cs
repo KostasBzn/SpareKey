@@ -32,7 +32,7 @@ namespace SpareKey.Core.Crypto
         /// Encrypts the plaintext and returns NONCE + CIPHERTEXT + TAG in one array.
         /// associatedData can be null if there is nothing extra.
         /// </summary>
-        public static byte[] Encrypt(byte[] key, byte[] plaintext, byte[]? associatedData)
+        public static byte[] Encrypt(byte[] key, byte[] plaintext, byte[] associatedData)
         {
             CheckKey(key);
             if (plaintext == null)
@@ -66,7 +66,7 @@ namespace SpareKey.Core.Crypto
         /// Takes NONCE + CIPHERTEXT + TAG and returns the plaintext.
         /// Throws a CryptographicException if the key is wrong or anything was changed.
         /// </summary>
-        public static byte[] Decrypt(byte[] key, byte[] encryptedData, byte[]? associatedData)
+        public static byte[] Decrypt(byte[] key, byte[] encryptedData, byte[] associatedData)
         {
             CheckKey(key);
             if (encryptedData == null)
