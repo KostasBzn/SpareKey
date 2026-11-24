@@ -61,7 +61,6 @@ namespace SpareKey.Dialogs
                 return;
             }
 
-            // Always a NEW object, so Cancel never changes the original.
             // When editing, it keeps the same id so Vault knows which one to replace.
             VaultEntry entry = new VaultEntry();
             if (entryId != Guid.Empty)
