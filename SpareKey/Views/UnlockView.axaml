@@ -5,9 +5,6 @@
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
              x:Class="SpareKey.Views.UnlockView">
 
-    <!-- Layout only. The button clicks are connected in UnlockView.axaml.cs,
-         so the designer preview can always show this view. -->
-
     <StackPanel Width="380" Spacing="14"
                 HorizontalAlignment="Center" VerticalAlignment="Center">
 
