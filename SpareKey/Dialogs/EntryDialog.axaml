@@ -1,8 +1,57 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="SpareKey.Dialogs.EntryDialog">
-  Welcome to Avalonia!
-</UserControl>
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="440"
+        x:Class="SpareKey.Dialogs.EntryDialog"
+        Title="New entry"
+        Icon="/Assets/sparekey.ico"
+        Width="440" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+
+    <!-- Layout only. Events are connected in EntryDialog.axaml.cs -->
+
+    <StackPanel Margin="20" Spacing="10">
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Title"/>
+            <TextBox x:Name="TitleBox"/>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Username or email"/>
+            <TextBox x:Name="UsernameBox"/>
+        </StackPanel>
+
+        <!-- Password box + Generate button side by side -->
+        <StackPanel Spacing="4">
+            <TextBlock Text="Password"/>
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBox x:Name="PasswordBox" Grid.Column="0" PasswordChar="•"
+                         Classes="revealPasswordButton"/>
+                <Button x:Name="GenerateButton" Grid.Column="1" Content="Generate"
+                        Margin="8,0,0,0"/>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Website"/>
+            <TextBox x:Name="UrlBox"/>
+        </StackPanel>
+
+        <!-- AcceptsReturn = Enter makes a new line here instead of clicking Save -->
+        <StackPanel Spacing="4">
+            <TextBlock Text="Notes"/>
+            <TextBox x:Name="NotesBox" AcceptsReturn="True" TextWrapping="Wrap" Height="80"/>
+        </StackPanel>
+
+        <TextBlock x:Name="MessageText" Foreground="#D13438" IsVisible="False"/>
+
+        <!-- IsCancel = Escape clicks Cancel. IsDefault = Enter clicks Save -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                    Spacing="8" Margin="0,6,0,0">
+            <Button x:Name="CancelButton" Content="Cancel" IsCancel="True"/>
+            <Button x:Name="SaveButton" Content="Save" Classes="accent" IsDefault="True"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

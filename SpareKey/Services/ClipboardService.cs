@@ -10,21 +10,21 @@ namespace SpareKey.Services
     /// Copies text to the clipboard and clears it again after 30 seconds,
     /// but only if the clipboard still holds what we copied.
     /// </summary>
-    internal class ClipboardService
+    public class ClipboardService
     {
         private const int ClearAfterSeconds = 30;
 
         private readonly TopLevel window;
-        private readonly DispatcherTimer clearTimer;
+        private readonly DispatcherTimer clearClipTimer;
         private string lastCopiedText = "";
 
         // In Avalonia the clipboard belongs to the window
         public ClipboardService(TopLevel window)
         {
             this.window = window;
-            clearTimer = new DispatcherTimer();
-            clearTimer.Interval = TimeSpan.FromSeconds(ClearAfterSeconds);
-            clearTimer.Tick += OnClearTimerTick;
+            clearClipTimer = new DispatcherTimer();
+            clearClipTimer.Interval = TimeSpan.FromSeconds(ClearAfterSeconds);
+            clearClipTimer.Tick += OnClearTimerTick;
         }
 
         public async Task CopyAsync(string text)
@@ -37,8 +37,8 @@ namespace SpareKey.Services
             lastCopiedText = text;
 
             // Start the 30 seconds again on every copy
-            clearTimer.Stop();
-            clearTimer.Start();
+            clearClipTimer.Stop();
+            clearClipTimer.Start();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace SpareKey.Services
         /// </summary>
         public async Task ClearIfOursAsync()
         {
-            clearTimer.Stop();
+            clearClipTimer.Stop();
 
             IClipboard clipboard = window.Clipboard;
             if (clipboard == null || lastCopiedText == "")
