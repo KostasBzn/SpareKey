@@ -3,7 +3,7 @@
     <RootNamespace>SpareKey</RootNamespace>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\sparekey.ico</ApplicationIcon>
   </PropertyGroup>

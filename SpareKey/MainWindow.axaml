@@ -1,13 +1,13 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
         x:Class="SpareKey.MainWindow"
         Title="SpareKey"
-        Icon="/Assets/sparekey.ico">
-    <StackPanel Margin="20" Spacing="10">
-        <TextBlock x:Name="GreetingText" Text="I have no Idea what am I doing" FontSize="24"/>
-        <Button Content="Dont Click Here" Click="OnHelloClick"/>
-    </StackPanel>
+        Icon="/Assets/sparekey.ico"
+        Width="700" Height="500"
+        MinWidth="500" MinHeight="420"
+        WindowStartupLocation="CenterScreen">
+
 </Window>

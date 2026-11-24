@@ -2,7 +2,51 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
              x:Class="SpareKey.Views.UnlockView">
-  Welcome to Avalonia!
+
+    <!-- Layout only. The button clicks are connected in UnlockView.axaml.cs,
+         so the designer preview can always show this view. -->
+
+    <StackPanel Width="380" Spacing="14"
+                HorizontalAlignment="Center" VerticalAlignment="Center">
+
+        <!-- Logo and title -->
+        <Image Source="/Assets/sparekey-256.png" Width="72" Height="72"/>
+        <TextBlock Text="SpareKey" FontSize="26" FontWeight="SemiBold"
+                   HorizontalAlignment="Center"/>
+        <TextBlock Text="Unlock your vault" Opacity="0.7"
+                   HorizontalAlignment="Center" Margin="0,-10,0,10"/>
+
+        <!-- Text box and Browse button side by side for the file -->
+        <StackPanel Spacing="4">
+            <TextBlock Text="Vault file"/>
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBox x:Name="VaultPathBox" Grid.Column="0"/>
+                <Button x:Name="BrowseButton" Grid.Column="1" Content="Browse..."
+                        Margin="8,0,0,0"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Password. "revealPasswordButton" adds the eye button -->
+        <StackPanel Spacing="4">
+            <TextBlock Text="Master password"/>
+            <TextBox x:Name="PasswordBox" PasswordChar="•"
+                     Classes="revealPasswordButton"/>
+        </StackPanel>
+
+        <!-- IsDefault = pressing Enter clicks this button -->
+        <Button x:Name="UnlockButton" Content="Unlock" Classes="accent"
+                IsDefault="True"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Padding="0,8"/>
+
+        <!-- Error messages. Hidden until something comes -->
+        <TextBlock x:Name="MessageText" Foreground="#D13438"
+                   TextWrapping="Wrap" TextAlignment="Center" IsVisible="False"/>
+
+        <HyperlinkButton x:Name="ForgotButton"
+                         Content="Forgot password? Use recovery words"
+                         HorizontalAlignment="Center"/>
+    </StackPanel>
 </UserControl>
