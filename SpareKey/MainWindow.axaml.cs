@@ -8,12 +8,15 @@ using SpareKey.Views;
 namespace SpareKey
 {
     /// <summary>
-    /// The only window. It shows one view at a time
+    /// The only window. It shows one view at a time and switches between them
+    ///
+    /// It also owns the clipboard, auto-lock and the settings file.
     /// </summary>
     public partial class MainWindow : Window
     {
         private const int AutoLockMinutes = 5;
 
+        private readonly AppSettings settings;
         private readonly ClipboardService clipboard;
         private readonly AutoLockService autoLock;
 
@@ -26,30 +29,69 @@ namespace SpareKey
         public MainWindow()
         {
             InitializeComponent();
+            Version version = typeof(MainWindow).Assembly.GetName().Version;
+            Title = "SpareKey v" + version.ToString(2);
 
+            settings = AppSettings.Load();
             clipboard = new ClipboardService(this);
             autoLock = new AutoLockService(this, AutoLockMinutes);
             autoLock.LockRequested += OnLockRequested;
 
-            string startPath = "";
-#if DEBUG
-            startPath = GetOrCreateTestVault();
-#endif
-            ShowUnlockView(startPath);
+            ShowStartScreen();
+        }
+
+        // Screens
+
+        private void ShowStartScreen()
+        {
+            string lastPath = settings.LastVaultPath;
+
+            if (!string.IsNullOrEmpty(lastPath) && File.Exists(lastPath))
+                ShowUnlockView(lastPath);
+            else
+                ShowSetupView();
         }
 
         private void ShowUnlockView(string vaultPath)
         {
             UnlockView unlockView = new UnlockView();
-            unlockView.VaultUnlocked += OnVaultUnlocked;
+            unlockView.VaultUnlocked += OnVaultOpened;
+            unlockView.RecoveryRequested += OnRecoveryRequested;
+            unlockView.CreateNewRequested += OnCreateNewRequested;
             unlockView.SetVaultPath(vaultPath);
 
             Content = unlockView;
         }
 
-        private void OnVaultUnlocked(object sender, Vault vault)
+        private void ShowSetupView()
+        {
+            SetupView setupView = new SetupView();
+            setupView.VaultCreated += OnVaultOpened;
+            setupView.OpenExistingRequested += OnOpenExistingRequested;
+
+            Content = setupView;
+        }
+
+        private void ShowRecoveryView(string vaultPath)
+        {
+            RecoveryView recoveryView = new RecoveryView();
+            recoveryView.VaultRecovered += OnVaultOpened;
+            recoveryView.BackRequested += OnRecoveryBackRequested;
+            recoveryView.SetVaultPath(vaultPath);
+
+            Content = recoveryView;
+        }
+
+        // Events from the views
+
+        // Unlock, setup and recovery all end here when the vault is open
+        private void OnVaultOpened(object sender, Vault vault)
         {
             currentVault = vault;
+
+            // Remember this vault for the next start
+            settings.LastVaultPath = vault.FilePath;
+            settings.Save();
 
             VaultView vaultView = new VaultView();
             vaultView.SetVault(vault, clipboard);
@@ -59,7 +101,27 @@ namespace SpareKey
             autoLock.Start();
         }
 
-        // Lock button AND autolock both end up here
+        private void OnRecoveryRequested(object sender, string vaultPath)
+        {
+            ShowRecoveryView(vaultPath);
+        }
+
+        private void OnCreateNewRequested(object sender, EventArgs e)
+        {
+            ShowSetupView();
+        }
+
+        private void OnOpenExistingRequested(object sender, EventArgs e)
+        {
+            ShowUnlockView("");
+        }
+
+        private void OnRecoveryBackRequested(object sender, EventArgs e)
+        {
+            ShowUnlockView(settings.LastVaultPath);
+        }
+
+        // Lock button Aand auto-lock call  this event
         private async void OnLockRequested(object sender, EventArgs e)
         {
             string vaultPath = LockVault();
@@ -78,7 +140,6 @@ namespace SpareKey
                 return "";
 
             string path = currentVault.FilePath;
-            // if that save failed. Locking still happens either way.
             if (currentVault.HasUnsavedChanges)
             {
                 try
@@ -93,7 +154,7 @@ namespace SpareKey
             return path;
         }
 
-        // When the window closes: lock the vault and clear the clipboard.
+        // When the window closes lock the vault and clear the clipboard.
         protected override async void OnClosing(WindowClosingEventArgs e)
         {
             if (readyToClose)
@@ -109,29 +170,5 @@ namespace SpareKey
             readyToClose = true;
             Close();
         }
-
-#if DEBUG
-        // TEMPORARY test helper, only in Debug builds
-        private static string GetOrCreateTestVault()
-        {
-            string path = Path.Combine(AppContext.BaseDirectory, "test.sparekey");
-
-            if (!File.Exists(path))
-            {
-                Vault vault = Vault.Create(path, "pass1234", out string[] words);
-
-                VaultEntry entry = new VaultEntry();
-                entry.Title = "facebook";
-                entry.Username = "fb@example.com";
-                entry.Password = "12345";
-                vault.AddEntry(entry);
-
-                vault.Save();
-                vault.Lock();
-            }
-
-            return path;
-        }
-#endif
     }
 }

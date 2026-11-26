@@ -2,7 +2,109 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="560"
              x:Class="SpareKey.Views.SetupView">
-  Welcome to Avalonia!
+
+    <!-- Layout only. Events are connected in SetupView.axaml.cs.
+         Three steps in one view. Only one panel is visible at a time:
+           1. CreatePanel  - file + password
+           2. WordsPanel   - show the 24 words
+           3. ConfirmPanel - type 3 of them back
+         To see step 2 or 3 in the preview, temporarily set IsVisible="True"
+         on that panel and "False" on CreatePanel. -->
+
+    <ScrollViewer>
+        <StackPanel Width="460" Spacing="14" Margin="0,24"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <!-- Step 1: create -->
+            <StackPanel x:Name="CreatePanel" Spacing="14">
+                <Image Source="/Assets/sparekey-256.png" Width="72" Height="72"/>
+                <TextBlock Text="Welcome to SpareKey" FontSize="26" FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Create a new vault" Opacity="0.7"
+                           HorizontalAlignment="Center" Margin="0,-10,0,10"/>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Save the vault as"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox x:Name="VaultPathBox" Grid.Column="0"/>
+                        <Button x:Name="ChooseButton" Grid.Column="1" Content="Choose..."
+                                Margin="8,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Master password"/>
+                    <TextBox x:Name="PasswordBox" PasswordChar="•"
+                             Classes="revealPasswordButton"/>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Repeat the password"/>
+                    <TextBox x:Name="ConfirmPasswordBox" PasswordChar="•"
+                             Classes="revealPasswordButton"/>
+                </StackPanel>
+
+                <Button x:Name="CreateButton" Content="Create vault" Classes="accent"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        Padding="0,8"/>
+
+                <HyperlinkButton x:Name="OpenExistingButton"
+                                 Content="I already have a vault"
+                                 HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Step 2: show the words -->
+            <StackPanel x:Name="WordsPanel" Spacing="14" IsVisible="False">
+                <TextBlock Text="Your 24 recovery words" FontSize="22" FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Opacity="0.85"
+                           Text="Write them on paper, in this order. They are shown only once. With them you can open the vault if you forget the password. Anyone who has them can open it too, so never save them on a computer or phone."/>
+
+                <!-- Filled from code: 24 TextBlocks, 4 per row -->
+                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="6" Padding="16,10">
+                    <UniformGrid x:Name="WordsGrid" Columns="4"/>
+                </Border>
+
+                <Button x:Name="WordsDoneButton" Content="I wrote them down" Classes="accent"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        Padding="0,8"/>
+            </StackPanel>
+
+            <!-- Step 3: confirm 3 words -->
+            <StackPanel x:Name="ConfirmPanel" Spacing="14" IsVisible="False">
+                <TextBlock Text="Check your paper" FontSize="22" FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Type these three words from your paper." Opacity="0.85"
+                           HorizontalAlignment="Center"/>
+
+                <StackPanel Spacing="4">
+                    <TextBlock x:Name="ConfirmLabel1" Text="Word #1"/>
+                    <TextBox x:Name="ConfirmBox1"/>
+                </StackPanel>
+                <StackPanel Spacing="4">
+                    <TextBlock x:Name="ConfirmLabel2" Text="Word #2"/>
+                    <TextBox x:Name="ConfirmBox2"/>
+                </StackPanel>
+                <StackPanel Spacing="4">
+                    <TextBlock x:Name="ConfirmLabel3" Text="Word #3"/>
+                    <TextBox x:Name="ConfirmBox3"/>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,*">
+                    <Button x:Name="BackToWordsButton" Grid.Column="0" Content="Show the words again"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Margin="0,0,4,0" Padding="0,8"/>
+                    <Button x:Name="FinishButton" Grid.Column="1" Content="Finish" Classes="accent"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Margin="4,0,0,0" Padding="0,8"/>
+                </Grid>
+            </StackPanel>
+
+            <!-- Error messages for all three steps -->
+            <TextBlock x:Name="MessageText" Foreground="#D13438"
+                       TextWrapping="Wrap" TextAlignment="Center" IsVisible="False"/>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

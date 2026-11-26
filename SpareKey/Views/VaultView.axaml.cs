@@ -10,7 +10,8 @@ using SpareKey.Services;
 namespace SpareKey.Views
 {
     /// <summary>
-    /// The main screen the passwords list, search, add/edit/delete, copy.
+    /// The main screen while unlocked list, search, add/edit/delete, copy.
+    /// Every change is saved right away.
     /// </summary>
     public partial class VaultView : UserControl
     {
@@ -20,7 +21,7 @@ namespace SpareKey.Views
         private Vault vault;
         private ClipboardService clipboard;
 
-        // Delete needs two clicks: the first one only arms the button
+        // Delete needs two clicks: the first one only "arms" the button
         private bool deleteArmed;
 
         public VaultView()
@@ -32,6 +33,7 @@ namespace SpareKey.Views
             EntryList.DoubleTapped += OnEntryDoubleTapped;
 
             AddButton.Click += OnAddClick;
+            ChangePasswordButton.Click += OnChangePasswordClick;
             LockButton.Click += OnLockClick;
             CopyUsernameButton.Click += OnCopyUsernameClick;
             CopyPasswordButton.Click += OnCopyPasswordClick;
@@ -43,6 +45,7 @@ namespace SpareKey.Views
 
         /// <summary>
         /// Called by MainWindow right after creating the view.
+        /// (Not in the constructor: the designer preview needs an empty constructor.)
         /// </summary>
         public void SetVault(Vault vault, ClipboardService clipboard)
         {
@@ -51,7 +54,7 @@ namespace SpareKey.Views
             RefreshList();
         }
 
-        // List ans search
+        // List + search
 
         private void RefreshList()
         {
@@ -114,13 +117,12 @@ namespace SpareKey.Views
             EditButton.IsEnabled = hasSelection;
             DeleteButton.IsEnabled = hasSelection;
 
-            // Selecting something else cancels a half-done delete
+            // Selecting something else cancels a half done delete
             deleteArmed = false;
             DeleteButton.Content = "Delete";
         }
 
         // Copy
-
         private async void OnCopyUsernameClick(object sender, RoutedEventArgs e)
         {
             VaultEntry entry = GetSelectedEntry();
@@ -142,7 +144,6 @@ namespace SpareKey.Views
         }
 
         // Add / edit / delete
-
         private async void OnAddClick(object sender, RoutedEventArgs e)
         {
             EntryDialog dialog = new EntryDialog();
@@ -188,7 +189,7 @@ namespace SpareKey.Views
             if (entry == null)
                 return;
 
-            // First click: ask. Second click: delete.
+            // on first click we ask second confirmation
             if (!deleteArmed)
             {
                 deleteArmed = true;
@@ -201,15 +202,22 @@ namespace SpareKey.Views
             SaveVault();
         }
 
+        private async void OnChangePasswordClick(object sender, RoutedEventArgs e)
+        {
+            ChangePasswordDialog dialog = new ChangePasswordDialog();
+            dialog.SetVault(vault);
+            bool changed = await dialog.ShowDialog<bool>(GetOwnerWindow());
+
+            if (changed)
+                StatusText.Text = "Password changed.";
+        }
+
         private void OnLockClick(object sender, RoutedEventArgs e)
         {
             LockClicked?.Invoke(this, EventArgs.Empty);
         }
 
         // Helpers
-
-        // Saving
-        // we it AFTER RefreshList, so an error message stays visible.
         private void SaveVault()
         {
             try

@@ -6,24 +6,15 @@ using System.Text.Json;
 namespace SpareKey.Core
 {
     /// <summary>
-    /// The only class the UI talks to. Everything crypto stays behind it.
-    ///
-    /// Usage:
-    ///   Vault vault = Vault.Create(path, password, out string[] words); // first time
-    ///   Vault vault = Vault.OpenWithPassword(path, password); // every day
-    ///   vault.AddEntry(...); vault.Save();
-    ///   vault.Lock(); // auto-lock
-    ///
-    /// Create, Open, Recover and ChangePassword run Argon2 and take about
-    /// a second. Recommended task.Run
+    /// Core methods called by the i
     /// </summary>
     public class Vault
     {
-        private const int BackupsToKeep = 5;
+        private const int BackupsToKeep = 1;
 
         private readonly string filePath;
-        private MasterKeyBox passwordBox;
-        private readonly MasterKeyBox recoveryBox;
+        private MasterKeyBox masterKeyPasswordBox;
+        private readonly MasterKeyBox masterKeyRecoveryBox; // unlocks with 24 words
         private byte[] masterKey;
         private readonly List<VaultEntry> entries;
 
@@ -43,16 +34,14 @@ namespace SpareKey.Core
         private Vault(string filePath, MasterKeyBox passwordBox, MasterKeyBox recoveryBox, byte[] masterKey, List<VaultEntry> entries)
         {
             this.filePath = filePath;
-            this.passwordBox = passwordBox;
-            this.recoveryBox = recoveryBox;
+            this.masterKeyPasswordBox = passwordBox;
+            this.masterKeyRecoveryBox = recoveryBox;
             this.masterKey = masterKey;
             this.entries = entries;
         }
 
         /// <summary>
-        /// Makes a new, empty vault and saves it right away.
-        /// recoveryWords: the 24 words. Show them to the user ONCE and never
-        /// store them anywhere. This is the only time they exist in the app.
+        /// Makes a new, empty vault and saves it right away, ready to accept entries
         /// </summary>
         public static Vault Create(string filePath, string password, out string[] recoveryWords)
         {
@@ -80,9 +69,7 @@ namespace SpareKey.Core
         }
 
         /// <summary>
-        /// Opens with the password (Box 1).
-        /// Returns null if the password is wrong.
-        /// Throws InvalidDataException if the file is damaged or was changed.
+        /// Opens with the password (box 1)
         /// </summary>
         public static Vault OpenWithPassword(string filePath, string password)
         {
@@ -98,10 +85,7 @@ namespace SpareKey.Core
         }
 
         /// <summary>
-        /// Opens with the 24 words (Box 2).
-        /// Returns null if the words are valid but belong to another vault.
-        /// Throws FormatException for a typo
-        /// Throws InvalidDataException if the file is damaged or was changed.
+        /// Opens with the 24 words (box 2)
         /// </summary>
         public static Vault OpenWithRecoveryWords(string filePath, string[] words)
         {
@@ -123,8 +107,7 @@ namespace SpareKey.Core
         }
 
         /// <summary>
-        /// "Forgot password": open with the 24 words and set a new password.
-        /// Saves right away. Returns null if the words don't open this vault.
+        /// "Forgot password" case. Opens with words and saves the new password
         /// </summary>
         public static Vault Recover(string filePath, string[] words, string newPassword)
         {
@@ -177,15 +160,11 @@ namespace SpareKey.Core
         {
             CheckNotLocked();
             if (updatedEntry == null)
-            {
                 throw new ArgumentNullException(nameof(updatedEntry));
-            }
 
-            int position = FindPosition(updatedEntry.Id);
+            int position = FindPositionById(updatedEntry.Id);
             if (position == -1)
-            {
                 throw new KeyNotFoundException("No entry with this id.");
-            }
 
             updatedEntry.CreatedUtc = entries[position].CreatedUtc;
             updatedEntry.ModifiedUtc = DateTime.UtcNow;
@@ -197,17 +176,15 @@ namespace SpareKey.Core
         {
             CheckNotLocked();
 
-            int position = FindPosition(id);
+            int position = FindPositionById(id);
             if (position == -1)
-            {
                 throw new KeyNotFoundException("No entry with this id.");
-            }
 
             entries.RemoveAt(position);
             HasUnsavedChanges = true;
         }
 
-        private int FindPosition(Guid id)
+        private int FindPositionById(Guid id)
         {
             for (int i = 0; i < entries.Count; i++)
             {
@@ -222,7 +199,6 @@ namespace SpareKey.Core
 
         /// <summary>
         /// Encrypts everything with a new nonce and writes it safely
-        /// (temp file to rename, with backups).
         /// </summary>
         public void Save()
         {
@@ -231,7 +207,7 @@ namespace SpareKey.Core
             byte[] json = JsonSerializer.SerializeToUtf8Bytes(entries);
             try
             {
-                byte[] fileBytes = VaultFile.Build(passwordBox, recoveryBox, masterKey, json);
+                byte[] fileBytes = VaultFile.Build(masterKeyPasswordBox, masterKeyRecoveryBox, masterKey, json);
                 SafeFileWriter.Write(filePath, fileBytes, BackupsToKeep);
                 HasUnsavedChanges = false;
             }
@@ -251,7 +227,7 @@ namespace SpareKey.Core
 
             // Uses today's default settings, so an old vault gets stronger
             // Argon2 settings whenever the password is changed.
-            passwordBox = MasterKeyBox.LockWithPassword(masterKey, newPassword, Argon2Settings.CreateDefault());
+            masterKeyPasswordBox = MasterKeyBox.LockWithPassword(masterKey, newPassword, Argon2Settings.CreateDefault());
             Save();
         }
 

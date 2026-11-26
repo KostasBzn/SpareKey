@@ -17,6 +17,12 @@ namespace SpareKey.Views
         /// </summary>
         public event EventHandler<Vault> VaultUnlocked;
 
+        /// <summary>"Forgot password?" clicked. Sends the vault path along.</summary>
+        public event EventHandler<string> RecoveryRequested;
+
+        /// <summary>"Create a new vault" clicked.</summary>
+        public event EventHandler CreateNewRequested;
+
         public UnlockView()
         {
             InitializeComponent();
@@ -24,6 +30,7 @@ namespace SpareKey.Views
             BrowseButton.Click += OnBrowseClick;
             UnlockButton.Click += OnUnlockClick;
             ForgotButton.Click += OnForgotClick;
+            CreateNewButton.Click += OnCreateNewClick;
         }
 
         /// <summary>Fills in the vault path.</summary>
@@ -134,12 +141,17 @@ namespace SpareKey.Views
 
         private void OnForgotClick(object sender, RoutedEventArgs e)
         {
-            // Recovery screen
-            ShowMessage("Recovery with the 24 words is not built yet.");
+            // Recovery screen. MainWindow switches to RecoveryView.
+            string path = (VaultPathBox.Text ?? "").Trim();
+            RecoveryRequested?.Invoke(this, path);
+        }
+
+        private void OnCreateNewClick(object sender, RoutedEventArgs e)
+        {
+            CreateNewRequested?.Invoke(this, EventArgs.Empty);
         }
 
         // Helpers
-
         private void ShowMessage(string message)
         {
             MessageText.Text = message;

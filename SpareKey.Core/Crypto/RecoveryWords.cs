@@ -36,7 +36,7 @@ namespace SpareKey.Core.Crypto
         // SHA-256 of the official BIP39 English list
         // Source: https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
         // Official raw file: https://raw.githubusercontent.com/bitcoin/bips/master/bip-0039/english.txt
-        // If the embedded file is ever damaged or edited, we refuse to use it.
+        // I dont know if this overkill but i chech the hash of the oiginal list for tampered words. Might be bulllshit
         private const string ExpectedListHash = "2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda";
 
         private static readonly string[] wordList = LoadWordList();
@@ -118,7 +118,7 @@ namespace SpareKey.Core.Crypto
 
                 if (!index.ContainsKey(word))
                 {
-                    // Tell the user WHICH word, counting from 1 like on paper
+                    // Log WHICH word, counting from 1 like on paper
                     throw new FormatException("Word " + (wordNumber + 1) + " (\"" + word + "\") is not in the word list.");
                 }
 
@@ -144,33 +144,6 @@ namespace SpareKey.Core.Crypto
             return secret;
         }
 
-        /// <summary>
-        /// Splits what the user typed or pasted into separate words.
-        /// Accepts spaces, tabs, new lines, any mix.
-        /// </summary>
-        public static string[] SplitInput(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                return Array.Empty<string>();
-            }
-
-            char[] separators = new char[] { ' ', '\t', '\r', '\n' };
-            return text.ToLowerInvariant().Split(separators, StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        /// <summary>
-        /// True if the word is in the list. Handy for the UI to mark a
-        /// typo in red while the user is still typing.
-        /// </summary>
-        public static bool IsKnownWord(string word)
-        {
-            if (string.IsNullOrWhiteSpace(word))
-            {
-                return false;
-            }
-            return wordIndex.ContainsKey(word.Trim().ToLowerInvariant());
-        }
 
         // Copies the bits of each byte into the bool array, left bit first.
         private static void WriteBits(byte[] source, bool[] bits, int startBit)

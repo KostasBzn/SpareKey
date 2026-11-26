@@ -62,7 +62,7 @@ namespace SpareKey.Core.Crypto
 
         // Making a new box
 
-        /// <summary>Box 1 - lock the master key with the user's password.</summary>
+        /// <summary>Box 1 - lock the master key with the password.</summary>
         public static MasterKeyBox LockWithPassword(byte[] masterKey, string password, Argon2Settings settings)
         {
             CheckMasterKey(masterKey);

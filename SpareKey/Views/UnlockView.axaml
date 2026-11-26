@@ -5,6 +5,9 @@
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
              x:Class="SpareKey.Views.UnlockView">
 
+    <!-- Layout only. The button clicks are connected in UnlockView.axaml.cs,
+         so the designer preview can always show this view. -->
+
     <StackPanel Width="380" Spacing="14"
                 HorizontalAlignment="Center" VerticalAlignment="Center">
 
@@ -42,8 +45,13 @@
         <TextBlock x:Name="MessageText" Foreground="#D13438"
                    TextWrapping="Wrap" TextAlignment="Center" IsVisible="False"/>
 
-        <HyperlinkButton x:Name="ForgotButton"
-                         Content="Forgot password? Use recovery words"
-                         HorizontalAlignment="Center"/>
+        <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <HyperlinkButton x:Name="ForgotButton"
+                             Content="Forgot password? Use recovery words"
+                             HorizontalAlignment="Center"/>
+            <HyperlinkButton x:Name="CreateNewButton"
+                             Content="Create a new vault"
+                             HorizontalAlignment="Center"/>
+        </StackPanel>
     </StackPanel>
 </UserControl>

@@ -11,13 +11,15 @@
     <!-- DockPanel: Top and Bottom parts first, the last child fills the rest -->
     <DockPanel Margin="16">
 
-        <!-- Top bar: search + Add + Lock -->
-        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,12">
+        <!-- Top bar: search + Add + Change password + Lock -->
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,0,0,12">
             <TextBox x:Name="SearchBox" Grid.Column="0"
                      PlaceholderText="Search title, username or website"/>
             <Button x:Name="AddButton" Grid.Column="1" Content="+ Add"
                     Classes="accent" Margin="8,0,0,0"/>
-            <Button x:Name="LockButton" Grid.Column="2" Content="Lock"
+            <Button x:Name="ChangePasswordButton" Grid.Column="2" Content="Change password"
+                    Margin="8,0,0,0"/>
+            <Button x:Name="LockButton" Grid.Column="3" Content="Lock"
                     Margin="8,0,0,0"/>
         </Grid>
 

@@ -17,7 +17,7 @@ namespace SpareKey.Core.Crypto
          *
          * NONCE: random, new on every Encrypt call. Not secret.
          * CIPHERTEXT: the locked data.
-         * TAG: a seal over the ciphertext AND the associated data. If even one byte changes anywhere, Decrypt fails.
+         * TAG: a seal. If even one byte changes anywhere, Decrypt fails.
          */
 
         public const int KeySize = 32;     // 32 bytes means 256bit key (we encrypt with Aes256)
